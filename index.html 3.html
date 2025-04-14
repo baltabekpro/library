@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Онлайн кітапхана - Заманауи</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+     body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5e6cc;
+    color: #5a3e2b;
+}
+
+.navbar {
+    background-color: #d4a373;
+}
+
+.navbar-brand, .nav-link {
+    color: #fff !important;
+}
+
+.nav-link:hover {
+    color: #fff !important;
+}
+
+.hero {
+    text-align: center;
+    padding: 50px;
+    background-image: url('https://www.northampton.ac.uk/wp-content/uploads/2018/02/alfons-morales-410757-unsplash.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: #fff;
+}
+.book-list {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+.book-item {
+    background-color: #fff;
+    padding: 15px;
+    width: 200px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s, transform 0.2s;
+}
+
+.book-item:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+}
+
+.book-item h3 {
+    font-size: 18px;
+    margin-bottom: 5px;
+    color: #5a3e2b;
+}
+
+.book-item p {
+    font-size: 14px;
+    color: #d4a373;
+}
+
+
+.form-control:focus {
+    border-color: #d4a373;
+    box-shadow: 0 0 5px rgba(212, 163, 115, 0.8);
+}
+
+.btn-custom {
+    background-color: #fff;
+    color: #fff;
+    transition: background-color 0.3s;
+}
+
+.btn-custom:hover {
+    background-color: #fff;
+    color: #fff;
+}
+
+footer {
+    background-color: #d4a373;
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+}
+
+.form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+}
+
+#main-section {
+    display: none;
+}
+
+.search-container {
+    margin: 20px auto;
+    max-width: 600px;
+    text-align: center;
+}
+
+.search-container input {
+    width: 80%;
+    padding: 10px;
+    border: 1px solid #fff;
+    border-radius: 5px;
+}
+
+.search-container button {
+    padding: 10px 15px;
+    background-color: #d4a373;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.search-container button:hover {
+    background-color: #d4a373;
+    color: #d4a373;
+}
+
+.book-list {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+.book-item {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    width: 200px;
+    text-align: center;
+}
+
+.search-section {
+    background-color: #f5e6cc;
+}
+
+.search-bar-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+#search-bar {
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid #b08968;
+}
+
+.search-button {
+    padding: 10px 20px;
+    background-color: #d4a373;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: #5a3e2b;
+}
+
+.catalog h2, .search-section h2, .contact-section h2, .register-section h2 {
+    font-size: 28px;
+    margin-bottom: 15px;
+    color: #5a3e2b;
+}
+
+.genre-button {
+    background-color: #5a3e2b;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.genre-button:hover {
+    background-color: #d4a373;
+    color: #d4a373;
+    transform: scale(1.05);
+}
+
+.book {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+.book-item {
+    background-color: #fff;
+    padding: 15px;
+    width: 150px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s, transform 0.2s;
+}
+
+.book-item:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+}
+
+.book-item h3 {
+    font-size: 18px;
+    margin-bottom: 5px;
+    color: #5a3e2b;
+}
+
+.book-item p {
+    font-size: 14px;
+    color: #d4a373;
+}
+
+.search-banner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background-color: #f5e6cc;
+    background-image: linear-gradient(to right, #d4a373, #d4a373);
+}
+
+.image-container {
+    text-align: center;
+    max-width: 800px;
+    width: 100%;
+}
+
+.image-container img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.genres {
+    margin: 20px auto;
+    max-width: 600px;
+    text-align: center;
+}
+
+.genres button {
+    margin: 5px;
+    padding: 10px 15px;
+    background-color: #5a3e2b;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.genres button:hover {
+    background-color: #d4a373;
+    color: #d4a373;
+}
+
+.popular-books {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+}
+
+.popular-books .book-item {
+    background-color: #fff;
+    padding: 15px;
+    width: 150px;
+    text-align: center;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s, transform 0.2s;
+}
+
+.popular-books .book-item:hover {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transform: translateY(-5px);
+}
+
+    </style>
+</head>
+<body>
+    <div id="login-section">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#">📚 Онлайн кітапхана</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Тіркелу</a>
+                        </li>                    
+                        <li class="nav-item"><a class="nav-link" href="#contact">Байланыс</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <header class="hero">
+            <h1>Онлайн кітапханаға қош келдіңіз!</h1>
+            <p>Кітаптар әлемін ашыңыз</p>
+        </header>
+
+        <section id="register" class="container my-5 form-container">
+            <div class="card p-4 shadow" style="width: 100%; max-width: 400px;">
+                <h2 class="text-center">Тіркелу</h2>
+                <form class="row g-3 mt-3" onsubmit="return validateLogin()">
+                    <div class="col-12">
+                        <label for="email" class="form-label">Логин:</label>
+                        <input type="text" class="form-control" id="email" required>
+                    </div>
+                    <div class="col-12">
+                        <label for="password" class="form-label">Құпия сөз:</label>
+                        <input type="password" class="form-control" id="password" required>
+                    </div>
+                    <div class="col-12 text-center">
+                        <button type="submit" class="btn btn-custom w-100">Тіркелу</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <div id="main-section">
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#">📚 Онлайн кітапхана</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" onclick="showAllBooks()">Каталог</a>
+                            </li>                            
+                        </li>                    
+                        <li class="nav-item"><a class="nav-link" href="#contact">Байланыс</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <header class="hero">
+            <h1>Каталог бетіне қош келдіңіз!</h1>
+            <p>Кітаптар әлемін зерттеңіз</p>
+        </header>
+
+        <section id="search-banner" class="search-banner">
+            <div class="search-bar-container">
+                <input type="text" id="search-bar" placeholder="Кітаптың атын немесе авторды іздеңіз..." onkeyup="searchBooks()">
+                <button type="button" class="search-button">🔍</button>
+            </div>
+        </section>
+
+        <section id="popular-books" class="container my-5">
+            <h2 class="text-center">📚 Танымал кітаптар</h2>
+            <div class="book-list" id="popular-books-container"></div>
+        </section>        
+        
+        
+        <section id="genre-selection" class="container my-5">
+            <h2 class="text-center">🎭 Жанрды таңдаңыз</h2>
+            <div class="genre-buttons text-center">
+            </div>
+        </section>
+        
+
+
+        <div class="genres" id="genres">
+            
+        </div>
+
+        <div class="book-list" id="book-list">
+            
+        </div>
+
+
+        <section id="contact" class="container my-5">
+            <h2 class="text-center">Байланыс</h2>
+            <p class="text-center">Біздің мекен жайымыз: Алматы қ., Гоголя к-сі, 114-үй</p>
+            <p class="text-center">Байланыс телефон номері: +7 (747) 565-89-14</p>
+        </section>
+    </div>
+
+    
+    <!-- Модальное окно для подробной информации о книге -->
+    <div class="modal fade" id="bookModal" tabindex="-1" aria-labelledby="bookModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookModalLabel">Кітап туралы толығырақ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h5 id="modal-book-title"></h5>
+                    <p id="modal-book-author"></p>
+                    <p id="modal-book-description"></p>
+                    <a id="modal-book-link" href="#" target="_blank" class="btn btn-primary">Кітапты оқу</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+   
+
+    <script>
+        const books = [
+            { 
+                title: "Махаббат, қызық мол жылдар", 
+                author: "Әзілхан Нұршайықов", 
+                genre: "Романтика", 
+                description: "Махаббат, қызық мол жылдар — Әзілхан Нұршайықовтың қазақ әдебиетінің классикасына айналған туындысы. Бұл роман 1967 жылы алғаш рет жарық көріп, қазақ жастарының сүйікті кітабына айналды. Романның басты кейіпкерлері — студенттер мен жас адамдардың махаббат, достық, өмірдің түрлі қиындықтарын жеңіп шығу жолындағы күресі. Жазушы жастардың ішкі сезімдерін, олардың адамгершілік, адалдық, махаббат туралы түсініктерін терең әрі шынайы суреттейді.",
+                link: "http://dev-s.balatili.kz/uploads/books/e3c0b8aca955a2e22aa53f053550270c/%D0%9C%D0%B0%D1%85%D0%B0%D0%B1%D0%B1%D0%B0%D1%82%20%D2%9B%D1%8B%D0%B7%D1%8B%D2%9B%20%D0%BC%D0%BE%D0%BB%20%D0%B6%D1%8B%D0%BB%D0%B4%D0%B0%D1%80.pdf", 
+                image: "https://simg.marwin.kz/media/catalog/product/cache/41deb699a7fea062a8915debbbb0442c/m/a/nrshayyov_mahabbat_yzy_mol_jyldar.jpg" 
+            },
+            { 
+                title: "Абай Жолы", 
+                author: "Мұхтар Әуезов", 
+                genre: "Классика", 
+                description: "Абай жолы — қазақ әдебиетінің ұлы шығармаларының бірі, қазақ халқының классикалық әдебиетінің символы және қазақтың ұлы ақыны, ойшылы Абай Құнанбайұлының өмірі мен шығармашылығына арналған роман-эпопея. Абай жолы — төрт томнан тұратын күрделі эпопея, алғаш рет 1942 жылы жарияланған. Мұхтар Әуезов осы шығармасында Абайдың жеке өмірін, оның дүниетанымын, шығармашылығын, қазақ қоғамындағы өзгерістерді және сол кезеңдегі тарихи оқиғаларды терең бейнелейді.",
+                link: "https://predmet.kz/adebiet/%D0%BA%D1%96%D1%82%D0%B0%D0%BF%D1%82%D0%B0%D1%80/%D0%90%D0%B1%D0%B0%D0%B9%20%D0%B6%D0%BE%D0%BB%D1%8B.1%20%D0%BA%D1%96%D1%82%D0%B0%D0%BF.pdf", 
+                image: "https://s.f.kz/prod/1540/1539578_1000.jpg" 
+            },
+            { 
+                title: "Қан мен Тер", 
+                author: "Әбдіжәміл Нұрпейісов", 
+                genre: "Классика", 
+                description: "Қан мен тер — қазақ әдебиетінің көрнекті шығармаларының бірі, жазушы Әбдіжәміл Нұрпейісовтің ең танымал туындысы. Роман алғаш рет 1970 жылы жарияланған және қазақ әдебиетінің классикалық туындыларының қатарына кіреді. Шығарма өзінің терең әлеуметтік және психологиялық мазмұнымен ерекшеленеді, қазақ халқының қиын кезеңдері мен халықтық тағдырдың шынайы суретін көрсетеді.",
+                link: "https://adebiportal.kz/upload/iblock/0d5/0d581f528880c6ae74bf3685d2ef0add.pdf", 
+                image: "https://balkhash.goo.kz/files/blog/1674232545216.jpg" 
+            },
+            { 
+               title: "Ұшқан ұя", 
+               author: "Бауыржан Момышұлы", 
+               genre: "Әдеби", 
+               link: "https://adebiportal.kz/upload/iblock/5e1/5e13518fb629e466f3a930c56af4d672.pdf", 
+               description: "Ұшқан ұя — қазақ жазушысы Бауыржан Момышұлының өмірі мен шығармашылығын дәріптейтін көркем туынды. Бұл шығарма алғаш рет 1966 жылы жарық көрген және Бауыржан Момышұлының шығармаларының ішіндегі ең танымалы болып табылады. Роман жазушының өз балалық шағы, ата-анасы және өскен ортасы туралы бейнелі түрде баяндалады.",
+               image: "https://frankfurt.apollo.olxcdn.com/v1/files/a77ofbi5geuz-KZ/image",
+            },
+            {
+               title: "Бақытсыз Жамал",
+               author: "Міржақов Дулатұлы", 
+               genre: "Романтика", 
+               link: "http://dev-s.balatili.kz/uploads/books/c440d23f5b0133c2199ed66e3fb01ffd/%D0%91%D0%90%D2%9A%D0%AB%D0%A2%D0%A1%D0%AB%D0%97%20%D0%96%D0%90%D0%9C%D0%90%D0%9B%20-%20%D0%A0%D0%BE%D0%BC%D0%B0%D0%BD.pdf", 
+               description: "Бақытсыз Жамал – бұл қазақ әдебиетінің классикалық туындыларының бірі, жазушы Міржақып Дулатұлының ең әйгілі шығармаларының қатарына жатады. Роман алғаш рет 1910 жылы жарық көрді. Шығарманың басты тақырыбы — қоғамдық қайшылықтар мен адамның ішкі әлемінің күресі, сондай-ақ әйелдердің қоғамдық орны мен бостандығы мәселелеріне арналған.",
+               image: "https://static.insales-cdn.com/images/products/1/4844/877253356/M_Dulatov_Baqytsyz_Jamal_pocketbook_COVER-16_curv.png"
+            },
+            {
+               title: "Ақбілек", 
+               author: "Жүсіпбек Аймауытов", 
+               genre: "Классика", 
+               link: "https://sauap.org/wp-content/uploads/2016/08/Zhusipbek_Aimauytov_Akbilek.pdf", 
+               description: "Ақбілек — қазақ жазушысы Жүсіпбек Аймауытовтың 1927 жылы жазылған романы. Бұл шығарма қазақ әдебиетінде әйелдер тағдыры, отбасылық өмір мен әлеуметтік мәселелерді терең қозғайтын шығармалардың бірі болып табылады.",
+               image: "https://sun9-69.userapi.com/impg/S9w-ZYE_vb3QtLUgsyVNdKOw1no-z7Jz4gWEsQ/cfDpfQnySe4.jpg?size=800x1188&quality=95&sign=2d179e5584f43f6c08985a9a8d9ce6dc&c_uniq_tag=SsAVXpFxo4WJL8u3j2P2GwfY_dNu-lTViTDy4OrUl1E&type=album",
+            },
+            {
+               title: "Қаһар", 
+               author: "Ілияс Есенберлин", 
+               genre: "Тарихи", 
+               link: "https://pushkinlibrary.kz/exhibitions/esenberlin/docs/3.pdf", 
+               description: "Қаһар — қазақ жазушысы Ілияс Жансүгіровтың 1936 жылы жазылған романы. Бұл шығарма қазақ әдебиетінде әлеуметтік және саяси тақырыптарды терең қозғайтын маңызды шығармалардың бірі болып табылады. Романның негізінде қазақ халқының ұлттық тағдыры, социалистік қоғамның қалыптасу кезеңі, еңбек адамдарының қиыншылығы және ұлттық сезімдер жайлы мәселелер жатыр.",
+               image: "https://sun9-62.userapi.com/impf/c638927/v638927783/557a/9_ws_YkAJxw.jpg?size=582x807&quality=96&sign=593f5a08bab1259444179136179d9809&c_uniq_tag=PYg1a_Hvtz8sGncyjPDwi0mZkMdNtimQKC22iqtMQNg&type=album",
+            },
+            {
+               title: "Жусан иісі", 
+               author: "Сайын Мұратбеков", 
+               genre: "Тарихи", 
+               link: "https://pushkinlibrary.kz/exhibitions/Muratbekov_kaz/images/Muratbekov_Zhusan_iisi.pdf", 
+               description: "Жусан исі — қазақ жазушысы Сұлтанәлі Балғабаевтың 2006 жылы жазылған романы. Бұл шығарма қазақ қоғамының өткен мен қазіргі кезеңіндегі күрделі мәселелерді қарастырып, сонымен қатар адам жанындағы терең сезімдер мен рухани ізденістерге арналады. Романның негізгі тақырыбы — адамның өз болмысын түсініп, ішкі жан дүниесінде тыныштық табуға ұмтылуы.",
+               image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1548241221i/43687798.jpg",
+            },
+            
+        ];
+        const popularBooks = [
+    { 
+        title: "Махаббат, қызық мол жылдар", 
+        author: "Әзілхан Нұршайықов", 
+        genre: "Романтика", 
+        description: "Бұл кітап жастардың махаббаты мен өмірлік қиындықтарын суреттейді.",
+        link: "http://dev-s.balatili.kz/uploads/books/e3c0b8aca955a2e22aa53f053550270c/%D0%9C%D0%B0%D1%85%D0%B0%D0%B1%D0%B1%D0%B0%D1%82%20%D2%9B%D1%8B%D0%B7%D1%8B%D2%9B%20%D0%BC%D0%BE%D0%BB%20%D0%B6%D1%8B%D0%BB%D0%B4%D0%B0%D1%80.pdf", 
+        image: "https://simg.marwin.kz/media/catalog/product/cache/41deb699a7fea062a8915debbbb0442c/m/a/nrshayyov_mahabbat_yzy_mol_jyldar.jpg"
+    },
+    { 
+        title: "Абай жолы", 
+        author: "Мұхтар Әуезов", 
+        genre: "Классика", 
+        description: "Қазақтың ұлы ақыны Абай Құнанбайұлы туралы тарихи роман.",
+        link: "https://example.com/abai-zholy.pdf",
+        image: "https://kitap.kz/storage/books/AbaiZholy.jpg"
+    }
+];
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+    displayPopularBooks();
+    displayGenres();
+});
+document.addEventListener('DOMContentLoaded', () => {
+    displayGenres(); // Показываем жанры и сразу все книги
+});
+
+function showAllBooks() {
+    displayBooks(books); // Отобразить все книги
+    window.scrollTo({ top: document.getElementById('book-list').offsetTop, behavior: 'smooth' }); // Прокрутить к книгам
+}
+
+
+
+function validateLogin() {
+    const login = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+
+    if (login === 'aiibidildaeva@gmail.com' && password === 'admin') {
+        document.getElementById('login-section').style.display = 'none';
+        document.getElementById('main-section').style.display = 'block';
+        displayGenres();
+        return false;
+    } else {
+        alert('Қате логин немесе құпия сөз!');
+        return false;
+    }
+}
+
+function searchBooks() {
+    const query = document.getElementById('search-bar').value.toLowerCase();
+    const results = books.filter(book => book.title.toLowerCase().includes(query));
+    displayBooks(results);
+}
+
+function displayBooks(filteredBooks) {
+    const bookList = document.getElementById('book-list');
+    bookList.innerHTML = '';
+
+    if (filteredBooks.length > 0) {
+        filteredBooks.forEach(book => {
+            const bookItem = document.createElement('div');
+            bookItem.classList.add('book-item');
+            bookItem.innerHTML = `
+                <a href="${book.link}" target="_blank">
+                    <img src="${book.image}" alt="${book.title}" class="img-fluid">
+                    <h5>${book.title}</h5>
+                    <p>${book.author}</p>
+                </a>
+                <button class="btn btn-secondary" onclick="showBookDetails('${book.title}')">Толығырақ</button>`;
+            bookList.appendChild(bookItem);
+        });
+    } else {
+        bookList.innerHTML = '<p>Ештеңе табылмады</p>';
+    }
+}
+
+function showBookDetails(title) {
+    const book = books.find(book => book.title === title);
+    document.getElementById('modal-book-title').textContent = book.title;
+    document.getElementById('modal-book-author').textContent = `Автор: ${book.author}`;
+    document.getElementById('modal-book-description').textContent = book.description;
+    document.getElementById('modal-book-link').href = book.link;
+
+    const bookModal = new bootstrap.Modal(document.getElementById('bookModal'));
+    bookModal.show();
+}
+
+function displayGenres() {
+    const genres = [...new Set(books.map(book => book.genre))];
+    const genresContainer = document.getElementById('genres');
+    genresContainer.innerHTML = '';
+
+    // Кнопка "Барлық кітаптар" (Все книги)
+    const allBooksButton = document.createElement('button');
+    allBooksButton.textContent = "Барлық кітаптар";
+    allBooksButton.onclick = () => displayBooks(books); // Показывает все книги
+    genresContainer.appendChild(allBooksButton);
+
+    // Создание кнопок жанров
+    genres.forEach(genre => {
+        const button = document.createElement('button');
+        button.textContent = genre;
+        button.onclick = () => filterByGenre(genre);
+        genresContainer.appendChild(button);
+    });
+
+    // Показываем все книги по умолчанию
+    displayBooks(books);
+}
+
+
+function filterByGenre(genre) {
+    const filteredBooks = books.filter(book => book.genre === genre);
+    displayBooks(filteredBooks);
+}
+
+function displayPopularBooks() {
+    const popularBooksContainer = document.getElementById('popular-books-container');
+    popularBooksContainer.innerHTML = '';
+
+    popularBooks.forEach(book => {
+        const bookItem = document.createElement('div');
+        bookItem.classList.add('col-md-4', 'mb-4');
+        bookItem.innerHTML = `
+            <div class="card h-100">
+                <img src="${book.image}" class="card-img-top" alt="${book.title}">
+                <div class="card-body">
+                    <h5 class="card-title">${book.title}</h5>
+                    <p class="card-text">${book.author}</p>
+                    <button class="btn btn-primary" onclick="showBookDetails('${book.title}')">Толығырақ</button>
+                </div>
+            </div>
+        `;
+        popularBooksContainer.appendChild(bookItem);
+    });
+}function displayPopularBooks() {
+    const popularBooksContainer = document.getElementById('popular-books-container');
+    popularBooksContainer.innerHTML = '';
+
+    popularBooks.forEach(book => {
+        const bookItem = document.createElement('div');
+        bookItem.classList.add('book-item'); // Добавляем класс оформления книги
+        bookItem.innerHTML = `
+            <img src="${book.image}" class="img-fluid" alt="${book.title}">
+            <h3>${book.title}</h3>
+            <p>${book.author}</p>
+            <button class="btn btn-secondary" onclick="showBookDetails('${book.title}')">Толығырақ</button>
+        `;
+        popularBooksContainer.appendChild(bookItem);
+    });
+}
+
+
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
