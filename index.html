@@ -7,21 +7,28 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
      body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f5e6cc;
-    color: #5a3e2b;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f9f4e8;
+    color: #3c3c3c;
+    line-height: 1.6;
 }
 
 .navbar {
-    background-color: #d4a373;
+    background-color: #8c6d46;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 15px 0;
+    transition: all 0.3s ease;
 }
 
 .navbar-brand, .nav-link {
     color: #fff !important;
+    font-weight: 500;
+    transition: all 0.3s ease;
 }
 
 .nav-link:hover {
-    color: #fff !important;
+    color: #f9e4b7 !important;
+    transform: translateY(-2px);
 }
 
 .hero {
@@ -32,7 +39,26 @@
     background-position: center;
     background-repeat: no-repeat;
     color: #fff;
+    position: relative;
 }
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.hero h1, .hero p {
+    position: relative;
+    z-index: 2;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
 .book-list {
     margin-top: 20px;
     display: flex;
@@ -48,7 +74,18 @@
     text-align: center;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s, transform 0.2s;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.book-item img {
+    transition: transform 0.5s ease;
+    max-height: 180px;
+    object-fit: cover;
+}
+
+.book-item:hover img {
+    transform: scale(1.05);
 }
 
 .book-item:hover {
@@ -56,17 +93,22 @@
     transform: translateY(-5px);
 }
 
-.book-item h3 {
-    font-size: 18px;
-    margin-bottom: 5px;
-    color: #5a3e2b;
+.book-item h3, .book-item h5 {
+    font-weight: 600;
+    margin-top: 10px;
+    font-size: 16px;
+    height: 40px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
 }
 
 .book-item p {
     font-size: 14px;
     color: #d4a373;
+    font-style: italic;
 }
-
 
 .form-control:focus {
     border-color: #d4a373;
@@ -193,12 +235,20 @@ footer {
     cursor: pointer;
     font-size: 14px;
     transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .genre-button:hover {
     background-color: #d4a373;
     color: #d4a373;
     transform: scale(1.05);
+}
+
+.genre-button.active {
+    background-color: #d4a373;
+    color: white;
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .book {
@@ -300,9 +350,213 @@ footer {
     transform: translateY(-5px);
 }
 
+/* Стили для платных книг */
+.paid-badge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-color: #FF5722;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.book-item {
+    position: relative;
+}
+
+.payment-qr {
+    max-width: 200px;
+    margin: 0 auto;
+    display: block;
+}
+
+/* Стили для регистрационной формы */
+.auth-tabs {
+    margin-bottom: 20px;
+}
+
+.auth-tabs .nav-link {
+    color: #5a3e2b;
+}
+
+.auth-tabs .nav-link.active {
+    background-color: #d4a373;
+    color: white;
+    border-color: #d4a373;
+}
+
+/* Стили для QR-кода */
+.qr-container {
+    position: relative;
+    display: inline-block;
+    margin: 0 auto;
+}
+
+.qr-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+}
+
+/* Анимация успешной оплаты */
+.success-animation {
+    margin: 0 auto;
+}
+
+.checkmark {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 2;
+    stroke: #4bb71b;
+    stroke-miterlimit: 10;
+    box-shadow: inset 0px 0px 0px #4bb71b;
+    animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+    margin: 0 auto;
+}
+
+.checkmark__circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+    stroke: #4bb71b;
+    fill: none;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark__check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes scale {
+    0%, 100% {
+        transform: none;
+    }
+    50% {
+        transform: scale3d(1.1, 1.1, 1);
+    }
+}
+
+@keyframes fill {
+    100% {
+        box-shadow: inset 0px 0px 0px 30px #4bb71b;
+    }
+}
+
+/* Стили для анимации загрузки */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.loading-overlay.show {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #d4a373;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Улучшенные стили для модальных окон */
+.modal-content {
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    background-color: #d4a373;
+    color: white;
+    border-bottom: none;
+}
+
+.modal-header .btn-close {
+    color: white;
+}
+
+/* Стили для реалтайм уведомлений */
+.notification-toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #4bb71b;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 5px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.5s ease;
+}
+
+.notification-toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
     </style>
 </head>
 <body>
+    <!-- Добавляем оверлей для загрузки -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <!-- Добавляем тост для уведомлений -->
+    <div class="notification-toast" id="notificationToast">
+        <div class="notification-content">Операция успешно выполнена!</div>
+    </div>
+    
     <div id="login-section">
         <nav class="navbar navbar-expand-lg navbar-dark">
             <div class="container">
@@ -313,7 +567,7 @@ footer {
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="#">Тіркелу</a>
+                            <a class="nav-link" href="#register">Тіркелу</a>
                         </li>                    
                         <li class="nav-item"><a class="nav-link" href="#contact">Байланыс</a></li>
                     </ul>
@@ -328,20 +582,55 @@ footer {
 
         <section id="register" class="container my-5 form-container">
             <div class="card p-4 shadow" style="width: 100%; max-width: 400px;">
-                <h2 class="text-center">Тіркелу</h2>
-                <form class="row g-3 mt-3" onsubmit="return validateLogin()">
-                    <div class="col-12">
-                        <label for="email" class="form-label">Логин:</label>
-                        <input type="text" class="form-control" id="email" required>
+                <ul class="nav nav-tabs auth-tabs" id="authTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login-content" type="button" role="tab" aria-controls="login-content" aria-selected="true">Кіру</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="register-tab" data-bs-toggle="tab" data-bs-target="#register-content" type="button" role="tab" aria-controls="register-content" aria-selected="false">Тіркелу</button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="authTabsContent">
+                    <!-- Вкладка входа -->
+                    <div class="tab-pane fade show active" id="login-content" role="tabpanel" aria-labelledby="login-tab">
+                        <h2 class="text-center mt-3">Кіру</h2>
+                        <form class="row g-3 mt-3" onsubmit="return validateLogin()">
+                            <div class="col-12">
+                                <label for="login-email" class="form-label">Логин:</label>
+                                <input type="text" class="form-control" id="login-email" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="login-password" class="form-label">Құпия сөз:</label>
+                                <input type="password" class="form-control" id="login-password" required>
+                            </div>
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary w-100">Кіру</button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="col-12">
-                        <label for="password" class="form-label">Құпия сөз:</label>
-                        <input type="password" class="form-control" id="password" required>
+                    
+                    <!-- Вкладка регистрации -->
+                    <div class="tab-pane fade" id="register-content" role="tabpanel" aria-labelledby="register-tab">
+                        <h2 class="text-center mt-3">Тіркелу</h2>
+                        <form class="row g-3 mt-3" onsubmit="return registerUser()">
+                            <div class="col-12">
+                                <label for="register-name" class="form-label">Аты-жөні:</label>
+                                <input type="text" class="form-control" id="register-name" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="register-email" class="form-label">Э-пошта:</label>
+                                <input type="email" class="form-control" id="register-email" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="register-password" class="form-label">Құпия сөз:</label>
+                                <input type="password" class="form-control" id="register-password" required>
+                            </div>
+                            <div class="col-12 text-center">
+                                <button type="submit" class="btn btn-primary w-100">Тіркелу</button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="col-12 text-center">
-                        <button type="submit" class="btn btn-custom w-100">Тіркелу</button>
-                    </div>
-                </form>
+                </div>
             </div>
         </section>
     </div>
@@ -421,15 +710,76 @@ footer {
                     <h5 id="modal-book-title"></h5>
                     <p id="modal-book-author"></p>
                     <p id="modal-book-description"></p>
-                    <a id="modal-book-link" href="#" target="_blank" class="btn btn-primary">Кітапты оқу</a>
+                    <div id="modal-book-price-info"></div>
+                    <div id="modal-book-action-container">
+                        <a id="modal-book-link" href="#" target="_blank" class="btn btn-primary">Кітапты оқу</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Модальное окно для оплаты -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentModalLabel">Кітапты сатып алу</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <h5 id="payment-book-title"></h5>
+                    <p id="payment-book-price"></p>
+                    <p>Төлем жасау үшін QR кодты сканерлеңіз:</p>
+                    <div class="qr-container">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://example.com/payment" alt="Payment QR Code" class="payment-qr">
+                        <div class="qr-overlay d-none">
+                            <div class="spinner-border text-light" role="status">
+                                <span class="visually-hidden">Жүктелуде...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <p class="text-muted">QR кодты сканерлегенде, төлем беті ашылады</p>
+                        <div class="d-flex justify-content-center gap-2">
+                            <button id="simulate-scan" class="btn btn-info">QR Сканерлеуді имитациялау</button>
+                            <button id="confirm-payment" class="btn btn-success">Төлемді растау</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-   
+    <!-- Модальное окно успешной оплаты -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-body text-center py-4">
+                    <div class="success-animation">
+                        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                        </svg>
+                    </div>
+                    <h4 class="mt-3">Төлем сәтті аяқталды!</h4>
+                    <p>Рахмет! Кітап сатып алынды.</p>
+                    <button id="success-close" class="btn btn-primary mt-2">Жабу</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
+        const users = [
+            { email: 'aiibidildaeva@gmail.com', password: 'admin', name: 'Админ' }
+        ];
+        
+        let currentUser = null;
+        
+        // База данных купленных книг пользователями
+        const purchasedBooks = {};
+        
         const books = [
             { 
                 title: "Махаббат, қызық мол жылдар", 
@@ -437,7 +787,9 @@ footer {
                 genre: "Романтика", 
                 description: "Махаббат, қызық мол жылдар — Әзілхан Нұршайықовтың қазақ әдебиетінің классикасына айналған туындысы. Бұл роман 1967 жылы алғаш рет жарық көріп, қазақ жастарының сүйікті кітабына айналды. Романның басты кейіпкерлері — студенттер мен жас адамдардың махаббат, достық, өмірдің түрлі қиындықтарын жеңіп шығу жолындағы күресі. Жазушы жастардың ішкі сезімдерін, олардың адамгершілік, адалдық, махаббат туралы түсініктерін терең әрі шынайы суреттейді.",
                 link: "http://dev-s.balatili.kz/uploads/books/e3c0b8aca955a2e22aa53f053550270c/%D0%9C%D0%B0%D1%85%D0%B0%D0%B1%D0%B1%D0%B0%D1%82%20%D2%9B%D1%8B%D0%B7%D1%8B%D2%9B%20%D0%BC%D0%BE%D0%BB%20%D0%B6%D1%8B%D0%BB%D0%B4%D0%B0%D1%80.pdf", 
-                image: "https://simg.marwin.kz/media/catalog/product/cache/41deb699a7fea062a8915debbbb0442c/m/a/nrshayyov_mahabbat_yzy_mol_jyldar.jpg" 
+                image: "https://simg.marwin.kz/media/catalog/product/cache/41deb699a7fea062a8915debbbb0442c/m/a/nrshayyov_mahabbat_yzy_mol_jyldar.jpg",
+                isPaid: true,
+                price: 1200
             },
             { 
                 title: "Абай Жолы", 
@@ -445,7 +797,9 @@ footer {
                 genre: "Классика", 
                 description: "Абай жолы — қазақ әдебиетінің ұлы шығармаларының бірі, қазақ халқының классикалық әдебиетінің символы және қазақтың ұлы ақыны, ойшылы Абай Құнанбайұлының өмірі мен шығармашылығына арналған роман-эпопея. Абай жолы — төрт томнан тұратын күрделі эпопея, алғаш рет 1942 жылы жарияланған. Мұхтар Әуезов осы шығармасында Абайдың жеке өмірін, оның дүниетанымын, шығармашылығын, қазақ қоғамындағы өзгерістерді және сол кезеңдегі тарихи оқиғаларды терең бейнелейді.",
                 link: "https://predmet.kz/adebiet/%D0%BA%D1%96%D1%82%D0%B0%D0%BF%D1%82%D0%B0%D1%80/%D0%90%D0%B1%D0%B0%D0%B9%20%D0%B6%D0%BE%D0%BB%D1%8B.1%20%D0%BA%D1%96%D1%82%D0%B0%D0%BF.pdf", 
-                image: "https://s.f.kz/prod/1540/1539578_1000.jpg" 
+                image: "https://s.f.kz/prod/1540/1539578_1000.jpg",
+                isPaid: false,
+                price: 0
             },
             { 
                 title: "Қан мен Тер", 
@@ -453,7 +807,9 @@ footer {
                 genre: "Классика", 
                 description: "Қан мен тер — қазақ әдебиетінің көрнекті шығармаларының бірі, жазушы Әбдіжәміл Нұрпейісовтің ең танымал туындысы. Роман алғаш рет 1970 жылы жарияланған және қазақ әдебиетінің классикалық туындыларының қатарына кіреді. Шығарма өзінің терең әлеуметтік және психологиялық мазмұнымен ерекшеленеді, қазақ халқының қиын кезеңдері мен халықтық тағдырдың шынайы суретін көрсетеді.",
                 link: "https://adebiportal.kz/upload/iblock/0d5/0d581f528880c6ae74bf3685d2ef0add.pdf", 
-                image: "https://balkhash.goo.kz/files/blog/1674232545216.jpg" 
+                image: "https://balkhash.goo.kz/files/blog/1674232545216.jpg",
+                isPaid: true,
+                price: 1500
             },
             { 
                title: "Ұшқан ұя", 
@@ -462,6 +818,8 @@ footer {
                link: "https://adebiportal.kz/upload/iblock/5e1/5e13518fb629e466f3a930c56af4d672.pdf", 
                description: "Ұшқан ұя — қазақ жазушысы Бауыржан Момышұлының өмірі мен шығармашылығын дәріптейтін көркем туынды. Бұл шығарма алғаш рет 1966 жылы жарық көрген және Бауыржан Момышұлының шығармаларының ішіндегі ең танымалы болып табылады. Роман жазушының өз балалық шағы, ата-анасы және өскен ортасы туралы бейнелі түрде баяндалады.",
                image: "https://frankfurt.apollo.olxcdn.com/v1/files/a77ofbi5geuz-KZ/image",
+               isPaid: false,
+               price: 0
             },
             {
                title: "Бақытсыз Жамал",
@@ -469,7 +827,9 @@ footer {
                genre: "Романтика", 
                link: "http://dev-s.balatili.kz/uploads/books/c440d23f5b0133c2199ed66e3fb01ffd/%D0%91%D0%90%D2%9A%D0%AB%D0%A2%D0%A1%D0%AB%D0%97%20%D0%96%D0%90%D0%9C%D0%90%D0%9B%20-%20%D0%A0%D0%BE%D0%BC%D0%B0%D0%BD.pdf", 
                description: "Бақытсыз Жамал – бұл қазақ әдебиетінің классикалық туындыларының бірі, жазушы Міржақып Дулатұлының ең әйгілі шығармаларының қатарына жатады. Роман алғаш рет 1910 жылы жарық көрді. Шығарманың басты тақырыбы — қоғамдық қайшылықтар мен адамның ішкі әлемінің күресі, сондай-ақ әйелдердің қоғамдық орны мен бостандығы мәселелеріне арналған.",
-               image: "https://static.insales-cdn.com/images/products/1/4844/877253356/M_Dulatov_Baqytsyz_Jamal_pocketbook_COVER-16_curv.png"
+               image: "https://static.insales-cdn.com/images/products/1/4844/877253356/M_Dulatov_Baqytsyz_Jamal_pocketbook_COVER-16_curv.png",
+               isPaid: true,
+               price: 1000
             },
             {
                title: "Ақбілек", 
@@ -478,6 +838,8 @@ footer {
                link: "https://sauap.org/wp-content/uploads/2016/08/Zhusipbek_Aimauytov_Akbilek.pdf", 
                description: "Ақбілек — қазақ жазушысы Жүсіпбек Аймауытовтың 1927 жылы жазылған романы. Бұл шығарма қазақ әдебиетінде әйелдер тағдыры, отбасылық өмір мен әлеуметтік мәселелерді терең қозғайтын шығармалардың бірі болып табылады.",
                image: "https://sun9-69.userapi.com/impg/S9w-ZYE_vb3QtLUgsyVNdKOw1no-z7Jz4gWEsQ/cfDpfQnySe4.jpg?size=800x1188&quality=95&sign=2d179e5584f43f6c08985a9a8d9ce6dc&c_uniq_tag=SsAVXpFxo4WJL8u3j2P2GwfY_dNu-lTViTDy4OrUl1E&type=album",
+               isPaid: false,
+               price: 0
             },
             {
                title: "Қаһар", 
@@ -486,6 +848,8 @@ footer {
                link: "https://pushkinlibrary.kz/exhibitions/esenberlin/docs/3.pdf", 
                description: "Қаһар — қазақ жазушысы Ілияс Жансүгіровтың 1936 жылы жазылған романы. Бұл шығарма қазақ әдебиетінде әлеуметтік және саяси тақырыптарды терең қозғайтын маңызды шығармалардың бірі болып табылады. Романның негізінде қазақ халқының ұлттық тағдыры, социалистік қоғамның қалыптасу кезеңі, еңбек адамдарының қиыншылығы және ұлттық сезімдер жайлы мәселелер жатыр.",
                image: "https://sun9-62.userapi.com/impf/c638927/v638927783/557a/9_ws_YkAJxw.jpg?size=582x807&quality=96&sign=593f5a08bab1259444179136179d9809&c_uniq_tag=PYg1a_Hvtz8sGncyjPDwi0mZkMdNtimQKC22iqtMQNg&type=album",
+               isPaid: true,
+               price: 1800
             },
             {
                title: "Жусан иісі", 
@@ -494,166 +858,462 @@ footer {
                link: "https://pushkinlibrary.kz/exhibitions/Muratbekov_kaz/images/Muratbekov_Zhusan_iisi.pdf", 
                description: "Жусан исі — қазақ жазушысы Сұлтанәлі Балғабаевтың 2006 жылы жазылған романы. Бұл шығарма қазақ қоғамының өткен мен қазіргі кезеңіндегі күрделі мәселелерді қарастырып, сонымен қатар адам жанындағы терең сезімдер мен рухани ізденістерге арналады. Романның негізгі тақырыбы — адамның өз болмысын түсініп, ішкі жан дүниесінде тыныштық табуға ұмтылуы.",
                image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1548241221i/43687798.jpg",
-            },
-            
+               isPaid: false,
+               price: 0
+            }
         ];
-        const popularBooks = [
-    { 
-        title: "Махаббат, қызық мол жылдар", 
-        author: "Әзілхан Нұршайықов", 
-        genre: "Романтика", 
-        description: "Бұл кітап жастардың махаббаты мен өмірлік қиындықтарын суреттейді.",
-        link: "http://dev-s.balatili.kz/uploads/books/e3c0b8aca955a2e22aa53f053550270c/%D0%9C%D0%B0%D1%85%D0%B0%D0%B1%D0%B1%D0%B0%D1%82%20%D2%9B%D1%8B%D0%B7%D1%8B%D2%9B%20%D0%BC%D0%BE%D0%BB%20%D0%B6%D1%8B%D0%BB%D0%B4%D0%B0%D1%80.pdf", 
-        image: "https://simg.marwin.kz/media/catalog/product/cache/41deb699a7fea062a8915debbbb0442c/m/a/nrshayyov_mahabbat_yzy_mol_jyldar.jpg"
-    },
-    { 
-        title: "Абай жолы", 
-        author: "Мұхтар Әуезов", 
-        genre: "Классика", 
-        description: "Қазақтың ұлы ақыны Абай Құнанбайұлы туралы тарихи роман.",
-        link: "https://example.com/abai-zholy.pdf",
-        image: "https://kitap.kz/storage/books/AbaiZholy.jpg"
-    }
-];
 
+        // Обновление популярных книг с учетом статуса платности
+        const popularBooks = [
+            { 
+                title: "Махаббат, қызық мол жылдар", 
+                author: "Әзілхан Нұршайықов", 
+                genre: "Романтика", 
+                description: "Бұл кітап жастардың махаббаты мен өмірлік қиындықтарын суреттейді.",
+                link: "http://dev-s.balatili.kz/uploads/books/e3c0b8aca955a2e22aa53f053550270c/%D0%9C%D0%B0%D1%85%D0%B0%D0%B1%D0%B1%D0%B0%D1%82%20%D2%9B%D1%8B%D0%B7%D1%8B%D2%9B%20%D0%BC%D0%BE%D0%BB%20%D0%B6%D1%8B%D0%BB%D0%B4%D0%B0%D1%80.pdf", 
+                image: "https://simg.marwin.kz/media/catalog/product/cache/41deb699a7fea062a8915debbbb0442c/m/a/nrshayyov_mahabbat_yzy_mol_jyldar.jpg",
+                isPaid: true,
+                price: 1200
+            },
+            { 
+                title: "Абай жолы", 
+                author: "Мұхтар Әуезов", 
+                genre: "Классика", 
+                description: "Қазақтың ұлы ақыны Абай Құнанбайұлы туралы тарихи роман.",
+                link: "https://example.com/abai-zholy.pdf",
+                image: "https://kitap.kz/storage/books/AbaiZholy.jpg",
+                isPaid: false,
+                price: 0
+            }
+        ];
 
         document.addEventListener("DOMContentLoaded", function () {
-    displayPopularBooks();
-    displayGenres();
-});
-document.addEventListener('DOMContentLoaded', () => {
-    displayGenres(); // Показываем жанры и сразу все книги
-});
-
-function showAllBooks() {
-    displayBooks(books); // Отобразить все книги
-    window.scrollTo({ top: document.getElementById('book-list').offsetTop, behavior: 'smooth' }); // Прокрутить к книгам
-}
-
-
-
-function validateLogin() {
-    const login = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-
-    if (login === 'aiibidildaeva@gmail.com' && password === 'admin') {
-        document.getElementById('login-section').style.display = 'none';
-        document.getElementById('main-section').style.display = 'block';
-        displayGenres();
-        return false;
-    } else {
-        alert('Қате логин немесе құпия сөз!');
-        return false;
-    }
-}
-
-function searchBooks() {
-    const query = document.getElementById('search-bar').value.toLowerCase();
-    const results = books.filter(book => book.title.toLowerCase().includes(query));
-    displayBooks(results);
-}
-
-function displayBooks(filteredBooks) {
-    const bookList = document.getElementById('book-list');
-    bookList.innerHTML = '';
-
-    if (filteredBooks.length > 0) {
-        filteredBooks.forEach(book => {
-            const bookItem = document.createElement('div');
-            bookItem.classList.add('book-item');
-            bookItem.innerHTML = `
-                <a href="${book.link}" target="_blank">
-                    <img src="${book.image}" alt="${book.title}" class="img-fluid">
-                    <h5>${book.title}</h5>
-                    <p>${book.author}</p>
-                </a>
-                <button class="btn btn-secondary" onclick="showBookDetails('${book.title}')">Толығырақ</button>`;
-            bookList.appendChild(bookItem);
+            displayPopularBooks();
+            displayGenres();
         });
-    } else {
-        bookList.innerHTML = '<p>Ештеңе табылмады</p>';
-    }
-}
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            displayGenres(); // Показываем жанры и сразу все книги
+        });
 
-function showBookDetails(title) {
-    const book = books.find(book => book.title === title);
-    document.getElementById('modal-book-title').textContent = book.title;
-    document.getElementById('modal-book-author').textContent = `Автор: ${book.author}`;
-    document.getElementById('modal-book-description').textContent = book.description;
-    document.getElementById('modal-book-link').href = book.link;
+        function registerUser() {
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            
+            // Показываем загрузку
+            showLoading();
+            
+            // Имитируем задержку для эффекта загрузки
+            setTimeout(() => {
+                // Проверка, не существует ли уже пользователь с таким email
+                const existingUser = users.find(user => user.email === email);
+                if (existingUser) {
+                    showLoading(false);
+                    alert('Пайдаланушы осы email-мен тіркелген. Басқа email қолданыңыз.');
+                    return false;
+                }
+                
+                // Добавление нового пользователя
+                users.push({ email, password, name });
+                purchasedBooks[email] = []; // Инициализируем пустой массив для купленных книг
+                
+                showLoading(false);
+                showNotification('Тіркелу сәтті аяқталды!');
+                
+                // Переключаемся на вкладку входа
+                document.getElementById('login-tab').click();
+            }, 1000);
+            
+            return false;
+        }
 
-    const bookModal = new bootstrap.Modal(document.getElementById('bookModal'));
-    bookModal.show();
-}
+        function validateLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Показываем загрузку
+            showLoading();
+            
+            // Имитируем задержку для эффекта загрузки
+            setTimeout(() => {
+                const user = users.find(user => user.email === email && user.password === password);
+                
+                if (user) {
+                    currentUser = user.email;
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('main-section').style.display = 'block';
+                    displayGenres();
+                    showLoading(false);
+                    showNotification(`Қош келдіңіз, ${user.name}!`);
+                } else {
+                    showLoading(false);
+                    alert('Қате логин немесе құпия сөз!');
+                }
+            }, 1000);
+            
+            return false;
+        }
 
-function displayGenres() {
-    const genres = [...new Set(books.map(book => book.genre))];
-    const genresContainer = document.getElementById('genres');
-    genresContainer.innerHTML = '';
+        function searchBooks() {
+            const query = document.getElementById('search-bar').value.toLowerCase();
+            const results = books.filter(book => book.title.toLowerCase().includes(query));
+            displayBooks(results);
+        }
 
-    // Кнопка "Барлық кітаптар" (Все книги)
-    const allBooksButton = document.createElement('button');
-    allBooksButton.textContent = "Барлық кітаптар";
-    allBooksButton.onclick = () => displayBooks(books); // Показывает все книги
-    genresContainer.appendChild(allBooksButton);
+        function displayBooks(filteredBooks) {
+            const bookList = document.getElementById('book-list');
+            bookList.innerHTML = '';
 
-    // Создание кнопок жанров
-    genres.forEach(genre => {
-        const button = document.createElement('button');
-        button.textContent = genre;
-        button.onclick = () => filterByGenre(genre);
-        genresContainer.appendChild(button);
-    });
+            if (filteredBooks.length > 0) {
+                filteredBooks.forEach(book => {
+                    const bookItem = document.createElement('div');
+                    bookItem.classList.add('book-item');
+                    
+                    // Добавляем бейдж для платных книг
+                    let paidBadge = '';
+                    if (book.isPaid) {
+                        paidBadge = `<span class="paid-badge">${book.price} ₸</span>`;
+                    }
+                    
+                    bookItem.innerHTML = `
+                        ${paidBadge}
+                        <img src="${book.image}" alt="${book.title}" class="img-fluid">
+                        <h5>${book.title}</h5>
+                        <p>${book.author}</p>
+                        <button class="btn btn-secondary" onclick="showBookDetails('${book.title}')">Толығырақ</button>`;
+                    bookList.appendChild(bookItem);
+                });
+            } else {
+                bookList.innerHTML = '<p>Ештеңе табылмады</p>';
+            }
+        }
 
-    // Показываем все книги по умолчанию
-    displayBooks(books);
-}
+        function showBookDetails(title) {
+            const book = books.find(book => book.title === title);
+            
+            // Добавляем эффект загрузки
+            showLoading();
+            
+            setTimeout(() => {
+                document.getElementById('modal-book-title').textContent = book.title;
+                document.getElementById('modal-book-author').textContent = `Автор: ${book.author}`;
+                document.getElementById('modal-book-description').textContent = book.description;
+                
+                const priceInfoElement = document.getElementById('modal-book-price-info');
+                const actionContainer = document.getElementById('modal-book-action-container');
+                
+                // Очищаем контейнеры перед добавлением новой информации
+                priceInfoElement.innerHTML = '';
+                actionContainer.innerHTML = '';
+                
+                if (book.isPaid) {
+                    // Проверяем, купил ли пользователь эту книгу
+                    const hasPurchased = currentUser && purchasedBooks[currentUser] && 
+                                        purchasedBooks[currentUser].includes(book.title);
+                    
+                    if (hasPurchased) {
+                        priceInfoElement.innerHTML = '<p class="text-success"><i class="fas fa-check-circle me-2"></i>Сатып алынған</p>';
+                        actionContainer.innerHTML = `<a href="${book.link}" target="_blank" class="btn btn-primary"><i class="fas fa-book-open me-2"></i>Кітапты оқу</a>`;
+                    } else {
+                        priceInfoElement.innerHTML = `<p>Бағасы: <strong>${book.price} ₸</strong></p>`;
+                        actionContainer.innerHTML = `
+                            <button class="btn btn-success" onclick="showPaymentModal('${book.title}')"><i class="fas fa-shopping-cart me-2"></i>Сатып алу</button>
+                        `;
+                    }
+                } else {
+                    priceInfoElement.innerHTML = '<p class="text-info"><i class="fas fa-gift me-2"></i>Тегін кітап</p>';
+                    actionContainer.innerHTML = `<a href="${book.link}" target="_blank" class="btn btn-primary"><i class="fas fa-book-open me-2"></i>Кітапты оқу</a>`;
+                }
+                
+                showLoading(false);
+                const bookModal = new bootstrap.Modal(document.getElementById('bookModal'));
+                bookModal.show();
+            }, 500);
+        }
 
+        function showPaymentModal(title) {
+            const book = books.find(book => book.title === title);
+            
+            // Закрываем модальное окно с деталями книги
+            const bookModal = bootstrap.Modal.getInstance(document.getElementById('bookModal'));
+            bookModal.hide();
+            
+            // Показываем эффект загрузки
+            showLoading();
+            
+            setTimeout(() => {
+                // Заполняем данные о книге в модальном окне оплаты
+                document.getElementById('payment-book-title').textContent = book.title;
+                document.getElementById('payment-book-price').textContent = `Бағасы: ${book.price} ₸`;
+                
+                // Определяем базовый URL в зависимости от окружения
+                const baseUrl = window.location.origin;
+                
+                // Добавляем уникальный идентификатор для отслеживания сессии оплаты
+                const paymentSessionId = 'session_' + Date.now();
+                
+                // Сохраняем информацию о текущей сессии оплаты
+                window.currentPaymentSession = {
+                    sessionId: paymentSessionId,
+                    bookTitle: book.title,
+                    status: 'pending'
+                };
+                
+                // Создаем уникальную ссылку для оплаты с параметрами книги и сессией
+                const paymentUrl = `${baseUrl}/payment.html?book=${encodeURIComponent(book.title)}&price=${book.price}&user=${encodeURIComponent(currentUser)}&session=${paymentSessionId}`;
+                
+                // Обновляем QR-код с ссылкой на страницу оплаты
+                document.querySelector('.payment-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(paymentUrl)}`;
+                
+                // Настраиваем обработчик для кнопки имитации сканирования QR-кода
+                document.getElementById('simulate-scan').onclick = function() {
+                    // Показываем оверлей загрузки
+                    document.querySelector('.qr-overlay').classList.remove('d-none');
+                    
+                    // Имитируем задержку сканирования
+                    setTimeout(() => {
+                        // Открываем страницу оплаты в новом окне/вкладке
+                        window.open(paymentUrl, '_blank');
+                        document.querySelector('.qr-overlay').classList.add('d-none');
+                    }, 1500);
+                };
+                
+                // Настраиваем обработчик для кнопки подтверждения оплаты
+                document.getElementById('confirm-payment').onclick = function() {
+                    completePurchase(book.title);
+                };
+                
+                showLoading(false);
+                
+                // Показываем модальное окно оплаты
+                const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
+                paymentModal.show();
+                
+                // Запускаем проверку статуса платежа в реальном времени
+                startPaymentStatusCheck(paymentSessionId, book.title);
+            }, 500);
+        }
+        
+        // Функция для проверки статуса платежа в реальном времени
+        function startPaymentStatusCheck(sessionId, bookTitle) {
+            // Интервал проверки статуса каждые 2 секунды
+            const checkInterval = setInterval(() => {
+                // Проверяем статус текущей сессии оплаты
+                if (window.currentPaymentSession && 
+                    window.currentPaymentSession.sessionId === sessionId && 
+                    window.currentPaymentSession.status === 'completed') {
+                    
+                    // Останавливаем проверку статуса
+                    clearInterval(checkInterval);
+                    
+                    // Завершаем покупку
+                    completePurchase(bookTitle);
+                }
+            }, 2000);
+            
+            // Сохраняем интервал, чтобы можно было его остановить при закрытии модального окна
+            window.currentCheckInterval = checkInterval;
+            
+            // Добавляем обработчик события при закрытии модального окна оплаты
+            const paymentModal = document.getElementById('paymentModal');
+            paymentModal.addEventListener('hidden.bs.modal', function () {
+                if (window.currentCheckInterval) {
+                    clearInterval(window.currentCheckInterval);
+                }
+            }, { once: true });
+        }
+        
+        // Обновленная функция завершения покупки с реалтайм-обновлением
+        function completePurchase(bookTitle) {
+            if (!currentUser) {
+                alert('Кітапты сатып алу үшін жүйеге кіру қажет');
+                return;
+            }
+            
+            // Показываем эффект загрузки
+            showLoading();
+            
+            setTimeout(() => {
+                // Инициализируем массив для текущего пользователя, если он еще не существует
+                if (!purchasedBooks[currentUser]) {
+                    purchasedBooks[currentUser] = [];
+                }
+                
+                // Добавляем книгу в список купленных пользователем
+                if (!purchasedBooks[currentUser].includes(bookTitle)) {
+                    purchasedBooks[currentUser].push(bookTitle);
+                }
+                
+                // Обновляем статус текущей сессии оплаты
+                if (window.currentPaymentSession && window.currentPaymentSession.bookTitle === bookTitle) {
+                    window.currentPaymentSession.status = 'completed';
+                }
+                
+                // Закрываем модальное окно оплаты, если оно открыто
+                const paymentModal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
+                if (paymentModal) {
+                    paymentModal.hide();
+                }
+                
+                showLoading(false);
+                
+                // Показываем модальное окно успешной оплаты
+                const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                successModal.show();
+                
+                // Показываем уведомление
+                showNotification(`"${bookTitle}" кітабы сәтті сатып алынды!`);
+                
+                // Настраиваем обработчик для закрытия модального окна успешной оплаты
+                document.getElementById('success-close').onclick = function() {
+                    successModal.hide();
+                    
+                    // Обновляем отображение книг
+                    const currentGenre = document.querySelector('.genres .genre-button.active')?.textContent;
+                    if (currentGenre && currentGenre !== "Барлық кітаптар") {
+                        filterByGenre(currentGenre);
+                    } else {
+                        displayBooks(books);
+                    }
+                };
+            }, 1000);
+        }
+        
+        // Улучшенный обработчик сообщений от страницы оплаты
+        window.addEventListener('message', function(event) {
+            // Проверяем, что сообщение пришло с нашего домена
+            if (event.origin === window.location.origin) {
+                console.log('Получено сообщение:', event.data);
+                
+                // Если получено сообщение об успешной оплате или об обновлении статуса
+                if (event.data.status === 'payment_success' || event.data.status === 'payment_status_update') {
+                    // Если сообщение содержит идентификатор сессии, обновляем статус
+                    if (event.data.sessionId && window.currentPaymentSession && 
+                        window.currentPaymentSession.sessionId === event.data.sessionId) {
+                        
+                        window.currentPaymentSession.status = 'completed';
+                        
+                        // Если модальное окно оплаты все еще открыто, показываем индикатор успешной оплаты
+                        const paymentModal = document.getElementById('paymentModal');
+                        if (paymentModal.classList.contains('show')) {
+                            // Создаем элемент индикатора успешной оплаты, если его еще нет
+                            let successIndicator = document.getElementById('payment-success-indicator');
+                            if (!successIndicator) {
+                                successIndicator = document.createElement('div');
+                                successIndicator.id = 'payment-success-indicator';
+                                successIndicator.className = 'alert alert-success mt-3';
+                                successIndicator.innerHTML = '<i class="fas fa-check-circle me-2"></i>Оплата успешно получена! Обрабатываем...';
+                                document.querySelector('.modal-body').appendChild(successIndicator);
+                            }
+                        }
+                        
+                        // Если страница оплаты сама не вызвала completePurchase, вызываем его здесь
+                        if (event.data.status === 'payment_success') {
+                            completePurchase(event.data.bookTitle);
+                        }
+                    }
+                }
+            }
+        }, false);
+        
+        // Функция для показа/скрытия индикатора загрузки
+        function showLoading(show = true) {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            if (show) {
+                loadingOverlay.classList.add('show');
+            } else {
+                loadingOverlay.classList.remove('show');
+            }
+        }
+        
+        // Функция для показа уведомлений
+        function showNotification(message, duration = 3000) {
+            const toast = document.getElementById('notificationToast');
+            toast.querySelector('.notification-content').textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+        
+        // Обработчик для выделения активной жанровой кнопки
+        function highlightActiveGenre(genreElement) {
+            // Удаляем класс active у всех кнопок жанров
+            document.querySelectorAll('.genres .genre-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Добавляем класс active выбранной кнопке
+            genreElement.classList.add('active');
+        }
 
-function filterByGenre(genre) {
-    const filteredBooks = books.filter(book => book.genre === genre);
-    displayBooks(filteredBooks);
-}
+        // Обновляем функции для работы с активным жанром
+        function displayGenres() {
+            const genres = [...new Set(books.map(book => book.genre))];
+            const genresContainer = document.getElementById('genres');
+            genresContainer.innerHTML = '';
 
-function displayPopularBooks() {
-    const popularBooksContainer = document.getElementById('popular-books-container');
-    popularBooksContainer.innerHTML = '';
+            // Кнопка "Барлық кітаптар" (Все книги)
+            const allBooksButton = document.createElement('button');
+            allBooksButton.textContent = "Барлық кітаптар";
+            allBooksButton.classList.add('genre-button', 'active'); // По умолчанию активна
+            allBooksButton.onclick = function() {
+                displayBooks(books);
+                highlightActiveGenre(this);
+            }
+            genresContainer.appendChild(allBooksButton);
 
-    popularBooks.forEach(book => {
-        const bookItem = document.createElement('div');
-        bookItem.classList.add('col-md-4', 'mb-4');
-        bookItem.innerHTML = `
-            <div class="card h-100">
-                <img src="${book.image}" class="card-img-top" alt="${book.title}">
-                <div class="card-body">
-                    <h5 class="card-title">${book.title}</h5>
-                    <p class="card-text">${book.author}</p>
-                    <button class="btn btn-primary" onclick="showBookDetails('${book.title}')">Толығырақ</button>
-                </div>
-            </div>
-        `;
-        popularBooksContainer.appendChild(bookItem);
-    });
-}function displayPopularBooks() {
-    const popularBooksContainer = document.getElementById('popular-books-container');
-    popularBooksContainer.innerHTML = '';
+            // Создание кнопок жанров
+            genres.forEach(genre => {
+                const button = document.createElement('button');
+                button.textContent = genre;
+                button.classList.add('genre-button');
+                button.onclick = function() {
+                    filterByGenre(genre);
+                    highlightActiveGenre(this);
+                }
+                genresContainer.appendChild(button);
+            });
 
-    popularBooks.forEach(book => {
-        const bookItem = document.createElement('div');
-        bookItem.classList.add('book-item'); // Добавляем класс оформления книги
-        bookItem.innerHTML = `
-            <img src="${book.image}" class="img-fluid" alt="${book.title}">
-            <h3>${book.title}</h3>
-            <p>${book.author}</p>
-            <button class="btn btn-secondary" onclick="showBookDetails('${book.title}')">Толығырақ</button>
-        `;
-        popularBooksContainer.appendChild(bookItem);
-    });
-}
+            // Показываем все книги по умолчанию
+            displayBooks(books);
+        }
 
+        function showAllBooks() {
+            displayBooks(books); // Отобразить все книги
+            window.scrollTo({ top: document.getElementById('book-list').offsetTop, behavior: 'smooth' }); // Прокрутить к книгам
+        }
 
+        function displayPopularBooks() {
+            const popularBooksContainer = document.getElementById('popular-books-container');
+            popularBooksContainer.innerHTML = '';
+
+            popularBooks.forEach(book => {
+                const bookItem = document.createElement('div');
+                bookItem.classList.add('book-item'); // Добавляем класс оформления книги
+                
+                // Добавляем бейдж для платных книг
+                let paidBadge = '';
+                if (book.isPaid) {
+                    paidBadge = `<span class="paid-badge">${book.price} ₸</span>`;
+                }
+                
+                bookItem.innerHTML = `
+                    ${paidBadge}
+                    <img src="${book.image}" class="img-fluid" alt="${book.title}">
+                    <h3>${book.title}</h3>
+                    <p>${book.author}</p>
+                    <button class="btn btn-secondary" onclick="showBookDetails('${book.title}')">Толығырақ</button>
+                `;
+                popularBooksContainer.appendChild(bookItem);
+            });
+        }
     </script>
 
+    <!-- Добавляем Font Awesome для иконок -->
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
