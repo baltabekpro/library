@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Онлайн кітапхана - Заманауи</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="/socket.io/socket.io.js"></script>
     <style>
      body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -771,15 +772,33 @@ footer {
     </div>
 
     <script>
+        // Инициализация Socket.io для реалтайм обновлений
+        const socket = io();
+        
+        // Проверяем, есть ли параметр успешной оплаты в URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const paymentSuccess = urlParams.get('payment_success');
+        const sessionId = urlParams.get('sessionId');
+        
+        if (paymentSuccess === 'true' && sessionId) {
+            // Показываем уведомление об успешной оплате
+            setTimeout(() => {
+                showNotification('Төлем сәтті аяқталды! Кітап сатып алынды.');
+            }, 1000);
+        }
+        
+        // Временная база данных (в реальном проекте должна быть на сервере)
         const users = [
             { email: 'aiibidildaeva@gmail.com', password: 'admin', name: 'Админ' }
         ];
         
         let currentUser = null;
+        let currentUserId = null;
         
         // База данных купленных книг пользователями
         const purchasedBooks = {};
         
+        // Временная база данных книг (в реальном проекте должна быть на сервере)
         const books = [
             { 
                 title: "Махаббат, қызық мол жылдар", 
@@ -888,14 +907,65 @@ footer {
         ];
 
         document.addEventListener("DOMContentLoaded", function () {
+            // Инициализация страницы
+            fetchBooks();
             displayPopularBooks();
             displayGenres();
+            
+            // Проверяем наличие sessionId для присоединения к комнате сессии оплаты
+            if (sessionId) {
+                socket.emit('join-payment-session', sessionId);
+            }
+            
+            // Обрабатываем события обновления статуса оплаты
+            socket.on('payment-status-changed', function(data) {
+                console.log('Получено обновление статуса платежа:', data);
+                
+                // Если статус "completed", обновляем список купленных книг
+                if (data.status === 'completed' && currentUser) {
+                    // Добавляем книгу в список купленных
+                    if (!purchasedBooks[currentUser]) {
+                        purchasedBooks[currentUser] = [];
+                    }
+                    
+                    const bookTitle = books.find(book => book.id === data.bookId)?.title;
+                    if (bookTitle && !purchasedBooks[currentUser].includes(bookTitle)) {
+                        purchasedBooks[currentUser].push(bookTitle);
+                        showNotification(`Книга "${bookTitle}" успешно куплена!`);
+                        
+                        // Обновляем отображение книг
+                        const currentGenre = document.querySelector('.genres .genre-button.active')?.textContent;
+                        if (currentGenre && currentGenre !== "Барлық кітаптар") {
+                            filterByGenre(currentGenre);
+                        } else {
+                            displayBooks(books);
+                        }
+                    }
+                }
+            });
         });
         
-        document.addEventListener('DOMContentLoaded', () => {
-            displayGenres(); // Показываем жанры и сразу все книги
-        });
-
+        // Функция для получения книг с сервера
+        function fetchBooks() {
+            fetch('/api/books')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Обновляем локальный массив книг
+                        books.length = 0;
+                        books.push(...data.books);
+                        
+                        // Обновляем отображение
+                        displayBooks(books);
+                        displayGenres();
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка при получении списка книг:', error);
+                });
+        }
+        
+        // Функция для регистрации пользователя
         function registerUser() {
             const name = document.getElementById('register-name').value;
             const email = document.getElementById('register-email').value;
@@ -904,30 +974,37 @@ footer {
             // Показываем загрузку
             showLoading();
             
-            // Имитируем задержку для эффекта загрузки
-            setTimeout(() => {
-                // Проверка, не существует ли уже пользователь с таким email
-                const existingUser = users.find(user => user.email === email);
-                if (existingUser) {
-                    showLoading(false);
-                    alert('Пайдаланушы осы email-мен тіркелген. Басқа email қолданыңыз.');
-                    return false;
-                }
-                
-                // Добавление нового пользователя
-                users.push({ email, password, name });
-                purchasedBooks[email] = []; // Инициализируем пустой массив для купленных книг
-                
+            // Отправляем запрос на регистрацию
+            fetch('/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name, email, password }),
+            })
+            .then(response => response.json())
+            .then(data => {
                 showLoading(false);
-                showNotification('Тіркелу сәтті аяқталды!');
                 
-                // Переключаемся на вкладку входа
-                document.getElementById('login-tab').click();
-            }, 1000);
+                if (data.success) {
+                    showNotification('Тіркелу сәтті аяқталды!');
+                    
+                    // Переключаемся на вкладку входа
+                    document.getElementById('login-tab').click();
+                } else {
+                    alert(data.message || 'Тіркелу кезінде қате орын алды.');
+                }
+            })
+            .catch(error => {
+                showLoading(false);
+                console.error('Ошибка при регистрации:', error);
+                alert('Серверге қосылу мүмкін болмады. Интернет байланысын тексеріңіз.');
+            });
             
             return false;
         }
 
+        // Функция для входа пользователя
         function validateLogin() {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
@@ -935,32 +1012,88 @@ footer {
             // Показываем загрузку
             showLoading();
             
-            // Имитируем задержку для эффекта загрузки
-            setTimeout(() => {
-                const user = users.find(user => user.email === email && user.password === password);
+            // Отправляем запрос на вход
+            fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                showLoading(false);
                 
-                if (user) {
-                    currentUser = user.email;
+                if (data.success) {
+                    currentUser = data.user.email;
+                    currentUserId = data.user.id;
                     document.getElementById('login-section').style.display = 'none';
                     document.getElementById('main-section').style.display = 'block';
-                    displayGenres();
-                    showLoading(false);
-                    showNotification(`Қош келдіңіз, ${user.name}!`);
+                    
+                    fetchUserBooks(currentUserId);
+                    
+                    showNotification(`Қош келдіңіз, ${data.user.name}!`);
                 } else {
-                    showLoading(false);
-                    alert('Қате логин немесе құпия сөз!');
+                    alert(data.message || 'Қате логин немесе құпия сөз!');
                 }
-            }, 1000);
+            })
+            .catch(error => {
+                showLoading(false);
+                console.error('Ошибка при входе:', error);
+                alert('Серверге қосылу мүмкін болмады. Интернет байланысын тексеріңіз.');
+            });
             
             return false;
         }
-
-        function searchBooks() {
-            const query = document.getElementById('search-bar').value.toLowerCase();
-            const results = books.filter(book => book.title.toLowerCase().includes(query));
-            displayBooks(results);
+        
+        // Функция для получения купленных книг пользователя
+        function fetchUserBooks(userId) {
+            if (!userId) return;
+            
+            fetch(`/api/user-books/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Инициализируем массив для текущего пользователя
+                        if (!purchasedBooks[currentUser]) {
+                            purchasedBooks[currentUser] = [];
+                        }
+                        
+                        // Добавляем книги в список купленных
+                        data.books.forEach(book => {
+                            if (!purchasedBooks[currentUser].includes(book.title)) {
+                                purchasedBooks[currentUser].push(book.title);
+                            }
+                        });
+                        
+                        // Обновляем отображение книг
+                        const currentGenre = document.querySelector('.genres .genre-button.active')?.textContent;
+                        if (currentGenre && currentGenre !== "Барлық кітаптар") {
+                            filterByGenre(currentGenre);
+                        } else {
+                            displayBooks(books);
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Ошибка при получении списка купленных книг:', error);
+                });
         }
 
+        // Функция поиска книг
+        function searchBooks() {
+            const query = document.getElementById('search-bar').value.toLowerCase();
+            const results = books.filter(book => book.title.toLowerCase().includes(query) || book.author.toLowerCase().includes(query));
+            displayBooks(results);
+        }
+        
+        // Функция фильтрации по жанру
+        function filterByGenre(genre) {
+            const filteredBooks = books.filter(book => book.genre === genre);
+            displayBooks(filteredBooks);
+        }
+
+        // Функция отображения списка книг
         function displayBooks(filteredBooks) {
             const bookList = document.getElementById('book-list');
             bookList.innerHTML = '';
@@ -981,7 +1114,7 @@ footer {
                         <img src="${book.image}" alt="${book.title}" class="img-fluid">
                         <h5>${book.title}</h5>
                         <p>${book.author}</p>
-                        <button class="btn btn-secondary" onclick="showBookDetails('${book.title}')">Толығырақ</button>`;
+                        <button class="btn btn-secondary" onclick="showBookDetails(${book.id || `'${book.title}'`})">Толығырақ</button>`;
                     bookList.appendChild(bookItem);
                 });
             } else {
@@ -989,8 +1122,20 @@ footer {
             }
         }
 
-        function showBookDetails(title) {
-            const book = books.find(book => book.title === title);
+        // Функция отображения деталей книги
+        function showBookDetails(bookIdOrTitle) {
+            // Находим книгу по ID или заголовку
+            let book;
+            if (typeof bookIdOrTitle === 'number') {
+                book = books.find(b => b.id === bookIdOrTitle);
+            } else {
+                book = books.find(b => b.title === bookIdOrTitle);
+            }
+            
+            if (!book) {
+                showNotification('Книга не найдена', 'error');
+                return;
+            }
             
             // Добавляем эффект загрузки
             showLoading();
@@ -1018,7 +1163,7 @@ footer {
                     } else {
                         priceInfoElement.innerHTML = `<p>Бағасы: <strong>${book.price} ₸</strong></p>`;
                         actionContainer.innerHTML = `
-                            <button class="btn btn-success" onclick="showPaymentModal('${book.title}')"><i class="fas fa-shopping-cart me-2"></i>Сатып алу</button>
+                            <button class="btn btn-success" onclick="createPaymentSession(${book.id})"><i class="fas fa-shopping-cart me-2"></i>Сатып алу</button>
                         `;
                     }
                 } else {
@@ -1032,8 +1177,67 @@ footer {
             }, 500);
         }
 
-        function showPaymentModal(title) {
-            const book = books.find(book => book.title === title);
+        // Функция создания платежной сессии
+        function createPaymentSession(bookId) {
+            if (!currentUser || !currentUserId) {
+                alert('Кітапты сатып алу үшін жүйеге кіру қажет');
+                return;
+            }
+            
+            // Показываем эффект загрузки
+            showLoading();
+            
+            // Создаем новую платежную сессию
+            fetch('/api/payment-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    userId: currentUserId,
+                    bookId: bookId
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                showLoading(false);
+                
+                if (data.success) {
+                    // Если книга уже куплена
+                    if (data.alreadyPurchased) {
+                        showNotification('Бұл кітап бұрын сатып алынған');
+                        
+                        // Обновляем список купленных книг
+                        fetchUserBooks(currentUserId);
+                        
+                        // Закрываем модальное окно с деталями книги
+                        const bookModal = bootstrap.Modal.getInstance(document.getElementById('bookModal'));
+                        bookModal.hide();
+                        
+                        return;
+                    }
+                    
+                    // Показываем модальное окно оплаты
+                    showPaymentModal(bookId, data.sessionId, data.userId);
+                } else {
+                    alert(data.message || 'Төлем сессиясын жасау кезінде қате орын алды');
+                }
+            })
+            .catch(error => {
+                showLoading(false);
+                console.error('Ошибка при создании платежной сессии:', error);
+                alert('Серверге қосылу мүмкін болмады. Интернет байланысын тексеріңіз.');
+            });
+        }
+
+        // Функция показа модального окна оплаты
+        function showPaymentModal(bookId, sessionId, userId) {
+            const book = books.find(b => b.id === bookId);
+            
+            if (!book) {
+                showNotification('Книга не найдена', 'error');
+                return;
+            }
             
             // Закрываем модальное окно с деталями книги
             const bookModal = bootstrap.Modal.getInstance(document.getElementById('bookModal'));
@@ -1050,18 +1254,19 @@ footer {
                 // Определяем базовый URL в зависимости от окружения
                 const baseUrl = window.location.origin;
                 
-                // Добавляем уникальный идентификатор для отслеживания сессии оплаты
-                const paymentSessionId = 'session_' + Date.now();
+                // Присоединяемся к комнате сессии оплаты
+                socket.emit('join-payment-session', sessionId);
                 
                 // Сохраняем информацию о текущей сессии оплаты
                 window.currentPaymentSession = {
-                    sessionId: paymentSessionId,
+                    sessionId: sessionId,
+                    bookId: bookId,
                     bookTitle: book.title,
                     status: 'pending'
                 };
                 
                 // Создаем уникальную ссылку для оплаты с параметрами книги и сессией
-                const paymentUrl = `${baseUrl}/payment.html?book=${encodeURIComponent(book.title)}&price=${book.price}&user=${encodeURIComponent(currentUser)}&session=${paymentSessionId}`;
+                const paymentUrl = `${baseUrl}/payment.html?book=${encodeURIComponent(book.title)}&price=${book.price}&user=${encodeURIComponent(currentUser)}&session=${sessionId}&bookId=${bookId}&userId=${userId}`;
                 
                 // Обновляем QR-код с ссылкой на страницу оплаты
                 document.querySelector('.payment-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(paymentUrl)}`;
@@ -1081,7 +1286,7 @@ footer {
                 
                 // Настраиваем обработчик для кнопки подтверждения оплаты
                 document.getElementById('confirm-payment').onclick = function() {
-                    completePurchase(book.title);
+                    completePayment(sessionId);
                 };
                 
                 showLoading(false);
@@ -1089,133 +1294,58 @@ footer {
                 // Показываем модальное окно оплаты
                 const paymentModal = new bootstrap.Modal(document.getElementById('paymentModal'));
                 paymentModal.show();
-                
-                // Запускаем проверку статуса платежа в реальном времени
-                startPaymentStatusCheck(paymentSessionId, book.title);
             }, 500);
         }
         
-        // Функция для проверки статуса платежа в реальном времени
-        function startPaymentStatusCheck(sessionId, bookTitle) {
-            // Интервал проверки статуса каждые 2 секунды
-            const checkInterval = setInterval(() => {
-                // Проверяем статус текущей сессии оплаты
-                if (window.currentPaymentSession && 
-                    window.currentPaymentSession.sessionId === sessionId && 
-                    window.currentPaymentSession.status === 'completed') {
-                    
-                    // Останавливаем проверку статуса
-                    clearInterval(checkInterval);
-                    
-                    // Завершаем покупку
-                    completePurchase(bookTitle);
-                }
-            }, 2000);
-            
-            // Сохраняем интервал, чтобы можно было его остановить при закрытии модального окна
-            window.currentCheckInterval = checkInterval;
-            
-            // Добавляем обработчик события при закрытии модального окна оплаты
-            const paymentModal = document.getElementById('paymentModal');
-            paymentModal.addEventListener('hidden.bs.modal', function () {
-                if (window.currentCheckInterval) {
-                    clearInterval(window.currentCheckInterval);
-                }
-            }, { once: true });
-        }
-        
-        // Обновленная функция завершения покупки с реалтайм-обновлением
-        function completePurchase(bookTitle) {
-            if (!currentUser) {
-                alert('Кітапты сатып алу үшін жүйеге кіру қажет');
-                return;
-            }
-            
+        // Функция завершения оплаты
+        function completePayment(sessionId) {
             // Показываем эффект загрузки
             showLoading();
             
-            setTimeout(() => {
-                // Инициализируем массив для текущего пользователя, если он еще не существует
-                if (!purchasedBooks[currentUser]) {
-                    purchasedBooks[currentUser] = [];
-                }
-                
-                // Добавляем книгу в список купленных пользователем
-                if (!purchasedBooks[currentUser].includes(bookTitle)) {
-                    purchasedBooks[currentUser].push(bookTitle);
-                }
-                
-                // Обновляем статус текущей сессии оплаты
-                if (window.currentPaymentSession && window.currentPaymentSession.bookTitle === bookTitle) {
-                    window.currentPaymentSession.status = 'completed';
-                }
-                
-                // Закрываем модальное окно оплаты, если оно открыто
-                const paymentModal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
-                if (paymentModal) {
-                    paymentModal.hide();
-                }
-                
+            // Обновляем статус платежной сессии
+            fetch('/api/payment-status', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    sessionId: sessionId,
+                    status: 'completed'
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
                 showLoading(false);
                 
-                // Показываем модальное окно успешной оплаты
-                const successModal = new bootstrap.Modal(document.getElementById('successModal'));
-                successModal.show();
-                
-                // Показываем уведомление
-                showNotification(`"${bookTitle}" кітабы сәтті сатып алынды!`);
-                
-                // Настраиваем обработчик для закрытия модального окна успешной оплаты
-                document.getElementById('success-close').onclick = function() {
-                    successModal.hide();
+                if (data.success) {
+                    // Закрываем модальное окно оплаты
+                    const paymentModal = bootstrap.Modal.getInstance(document.getElementById('paymentModal'));
+                    paymentModal.hide();
                     
-                    // Обновляем отображение книг
-                    const currentGenre = document.querySelector('.genres .genre-button.active')?.textContent;
-                    if (currentGenre && currentGenre !== "Барлық кітаптар") {
-                        filterByGenre(currentGenre);
-                    } else {
-                        displayBooks(books);
-                    }
-                };
-            }, 1000);
-        }
-        
-        // Улучшенный обработчик сообщений от страницы оплаты
-        window.addEventListener('message', function(event) {
-            // Проверяем, что сообщение пришло с нашего домена
-            if (event.origin === window.location.origin) {
-                console.log('Получено сообщение:', event.data);
-                
-                // Если получено сообщение об успешной оплате или об обновлении статуса
-                if (event.data.status === 'payment_success' || event.data.status === 'payment_status_update') {
-                    // Если сообщение содержит идентификатор сессии, обновляем статус
-                    if (event.data.sessionId && window.currentPaymentSession && 
-                        window.currentPaymentSession.sessionId === event.data.sessionId) {
-                        
-                        window.currentPaymentSession.status = 'completed';
-                        
-                        // Если модальное окно оплаты все еще открыто, показываем индикатор успешной оплаты
-                        const paymentModal = document.getElementById('paymentModal');
-                        if (paymentModal.classList.contains('show')) {
-                            // Создаем элемент индикатора успешной оплаты, если его еще нет
-                            let successIndicator = document.getElementById('payment-success-indicator');
-                            if (!successIndicator) {
-                                successIndicator = document.createElement('div');
-                                successIndicator.id = 'payment-success-indicator';
-                                successIndicator.className = 'alert alert-success mt-3';
-                                successIndicator.innerHTML = '<i class="fas fa-check-circle me-2"></i>Оплата успешно получена! Обрабатываем...';
-                                document.querySelector('.modal-body').appendChild(successIndicator);
-                            }
-                        }
-                        
-                        // Если страница оплаты сама не вызвала completePurchase, вызываем его здесь
-                        if (event.data.status === 'payment_success') {
-                            completePurchase(event.data.bookTitle);
-                        }
-                    }
+                    // Показываем модальное окно успешной оплаты
+                    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                    successModal.show();
+                    
+                    // Показываем уведомление
+                    showNotification(`Книга успешно куплена!`);
+                    
+                    // Обновляем список купленных книг
+                    fetchUserBooks(currentUserId);
+                    
+                    // Настраиваем обработчик для закрытия модального окна успешной оплаты
+                    document.getElementById('success-close').onclick = function() {
+                        successModal.hide();
+                    };
+                } else {
+                    alert(data.message || 'Төлемді аяқтау кезінде қате орын алды');
                 }
-            }
-        }, false);
+            })
+            .catch(error => {
+                showLoading(false);
+                console.error('Ошибка при завершении оплаты:', error);
+                alert('Серверге қосылу мүмкін болмады. Интернет байланысын тексеріңіз.');
+            });
+        }
         
         // Функция для показа/скрытия индикатора загрузки
         function showLoading(show = true) {
@@ -1228,8 +1358,19 @@ footer {
         }
         
         // Функция для показа уведомлений
-        function showNotification(message, duration = 3000) {
+        function showNotification(message, type = 'success', duration = 3000) {
             const toast = document.getElementById('notificationToast');
+            
+            // Устанавливаем цвет в зависимости от типа уведомления
+            if (type === 'error') {
+                toast.style.backgroundColor = '#dc3545';
+            } else if (type === 'warning') {
+                toast.style.backgroundColor = '#ffc107';
+                toast.style.color = '#333';
+            } else {
+                toast.style.backgroundColor = '#4bb71b';
+            }
+            
             toast.querySelector('.notification-content').textContent = message;
             toast.classList.add('show');
             
