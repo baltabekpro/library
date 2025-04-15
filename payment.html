@@ -673,7 +673,45 @@
             
             // Если статус "completed", показываем экран успешной оплаты
             if (data.status === 'completed') {
-                showPaymentSuccess();
+                // Получаем информацию о книге, если она не была загружена раньше
+                if (!bookTitle || bookTitle === 'Загрузка данных...') {
+                    fetch(`/api/books`)
+                        .then(response => response.json())
+                        .then(booksData => {
+                            if (booksData.success && booksData.books) {
+                                // Находим информацию о книге по bookId из data
+                                const book = booksData.books.find(b => b.id === data.bookId);
+                                if (book) {
+                                    // Обновляем значения переменных перед вызовом showPaymentSuccess
+                                    document.getElementById('book-title').textContent = book.title;
+                                    if (book.price) {
+                                        document.getElementById('book-price').textContent = `Бағасы: ${book.price} ₸`;
+                                    }
+                                    // Устанавливаем bookTitle для использования в showPaymentSuccess
+                                    window.bookTitle = book.title;
+                                    // Показываем анимацию успешной оплаты
+                                    showPaymentSuccess();
+                                } else {
+                                    // Если книга не найдена, все равно показываем анимацию с общим сообщением
+                                    window.bookTitle = "Кітап";
+                                    showPaymentSuccess();
+                                }
+                            } else {
+                                // Если не удалось получить данные о книгах, показываем общее сообщение
+                                window.bookTitle = "Кітап";
+                                showPaymentSuccess();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Ошибка при получении информации о книге:', error);
+                            // В случае ошибки все равно показываем анимацию
+                            window.bookTitle = "Кітап";
+                            showPaymentSuccess();
+                        });
+                } else {
+                    // Если данные о книге уже есть, просто показываем анимацию
+                    showPaymentSuccess();
+                }
             }
         });
     </script>
