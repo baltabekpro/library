@@ -5,6 +5,7 @@ const sqlite3 = require('sqlite3').verbose();
 const socketIo = require('socket.io');
 const fs = require('fs');
 const bodyParser = require('body-parser');
+const os = require('os');
 
 const app = express();
 const server = http.createServer(app);
@@ -17,7 +18,7 @@ if (!fs.existsSync(dbDir)) {
 }
 
 // Инициализация SQLite базы данных
-const db = new sqlite3.Database(path.join(dbDir, 'library.db'));
+const db = new sqlite3.Database(path.join(__dirname, 'library.db'));
 
 // Создаем необходимые таблицы
 db.serialize(() => {
@@ -499,8 +500,23 @@ app.use((req, res) => {
     res.status(404).sendFile(path.join(__dirname, '404.html'));
 });
 
+// Функция для получения локального IP-адреса
+function getLocalIp() {
+    const interfaces = os.networkInterfaces();
+    for (const iface of Object.values(interfaces)) {
+        for (const config of iface) {
+            if (config.family === 'IPv4' && !config.internal) {
+                return config.address;
+            }
+        }
+    }
+    return 'localhost';
+}
+
 // Запуск сервера
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
+    const localIp = getLocalIp();
     console.log(`Сервер запущен на порту ${PORT}`);
+    console.log(`Локальная ссылка для устройств в сети Wi-Fi: http://${localIp}:${PORT}`);
 });
