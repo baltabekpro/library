@@ -435,26 +435,20 @@ body {
     box-shadow: var(--shadow-sm);
 }
 
-/* Успешная анимация оплаты */
-.success-animation {
-    text-align: center;
-    margin: 30px 0;
-    position: relative;
-}
-
+/* Минималистичная анимация галочки без вспышек */
 .checkmark {
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     display: block;
-    stroke-width: 2;
+    stroke-width: 3;
     stroke: var(--success-color);
     stroke-miterlimit: 10;
-    box-shadow: inset 0px 0px 0px var(--success-color);
-    animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
     margin: 0 auto;
     position: relative;
     z-index: 10;
+    background: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .checkmark__circle {
@@ -464,44 +458,28 @@ body {
     stroke-miterlimit: 10;
     stroke: var(--success-color);
     fill: none;
-    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    animation: stroke 0.8s cubic-bezier(0.65, 0, 0.45, 1) forwards;
 }
 
 .checkmark__check {
     transform-origin: 50% 50%;
     stroke-dasharray: 48;
     stroke-dashoffset: 48;
-    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+    animation: stroke 0.5s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
 }
 
+/* Удаляем лишние анимации и оставляем только необходимые */
+@keyframes stroke {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Удаляем анимации scale и fill, которые создавали эффект вспышки */
+
+/* Удаляем success-rays, который создавал эффект лучей вокруг галочки */
 .success-rays {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 150px;
-    height: 150px;
-    z-index: 1;
-}
-
-.success-rays:before, .success-rays:after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    border-radius: 50%;
-    border: 4px solid transparent;
-    border-top-color: var(--success-color);
-    border-bottom-color: var (--success-color);
-    animation: rotateCircle 2s linear infinite;
-}
-
-.success-rays:after {
-    border-top-color: var(--primary-light);
-    border-bottom-color: var(--primary-light);
-    animation-duration: 3s;
+    display: none;
 }
 
 /* Анимация конфетти */
@@ -565,27 +543,6 @@ body {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
-}
-
-@keyframes stroke {
-    100% {
-        stroke-dashoffset: 0;
-    }
-}
-
-@keyframes scale {
-    0%, 100% {
-        transform: none;
-    }
-    50% {
-        transform: scale3d(1.1, 1.1, 1);
-    }
-}
-
-@keyframes fill {
-    100% {
-        box-shadow: inset 0px 0px 0px 30px var(--success-color);
-    }
 }
 
 @keyframes rotateCircle {
@@ -1047,10 +1004,42 @@ body {
                         purchasedBooks[currentUser] = [];
                     }
                     
-                    const bookTitle = books.find(book => book.id === data.bookId)?.title;
+                    const purchasedBook = books.find(book => book.id === data.bookId);
+                    const bookTitle = purchasedBook?.title;
+                    
                     if (bookTitle && !purchasedBooks[currentUser].includes(bookTitle)) {
                         purchasedBooks[currentUser].push(bookTitle);
-                        showNotification(`Книга "${bookTitle}" успешно куплена!`);
+                        
+                        // Показываем модальное окно успешной оплаты
+                        if (purchasedBook) {
+                            // Закрываем все другие модальные окна
+                            const openModals = document.querySelectorAll('.modal.show');
+                            openModals.forEach(modal => {
+                                const instance = bootstrap.Modal.getInstance(modal);
+                                if (instance) instance.hide();
+                            });
+                            
+                            // Анимация конфетти для эффекта успешной оплаты
+                            createConfetti();
+                            
+                            // Показываем модальное окно успешной оплаты
+                            const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                            successModal.show();
+                            
+                            // Настраиваем обработчик для закрытия модального окна
+                            document.getElementById('success-close').onclick = function() {
+                                successModal.hide();
+                            };
+                            
+                            // Настраиваем обработчик для кнопки "Читать книгу"
+                            document.getElementById('success-read-book').onclick = function() {
+                                successModal.hide();
+                                window.open(purchasedBook.link, '_blank');
+                            };
+                        } else {
+                            // Если информация о книге недоступна, показываем только уведомление
+                            showNotification(`Новая книга успешно куплена!`, 'success', 5000);
+                        }
                         
                         // Обновляем отображение книг
                         const currentGenre = document.querySelector('.genres .genre-button.active')?.textContent;
