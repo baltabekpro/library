@@ -2,14 +2,14 @@ const express = require('express');
 const http = require('http');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
-const socketIo = require('socket.io');
 const fs = require('fs');
 const bodyParser = require('body-parser');
 const os = require('os');
+const ngrok = require('ngrok');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = require('socket.io')(server); // Правильная инициализация Socket.IO
 
 // Создаем директорию для базы данных, если она не существует
 const dbDir = path.join(__dirname, 'db');
@@ -500,6 +500,11 @@ app.use((req, res) => {
     res.status(404).sendFile(path.join(__dirname, '404.html'));
 });
 
+// Обработка запроса favicon.ico
+app.get('/favicon.ico', (req, res) => {
+    res.status(204).end(); // Возвращаем пустой ответ
+});
+
 // Функция для получения локального IP-адреса
 function getLocalIp() {
     const interfaces = os.networkInterfaces();
@@ -513,10 +518,16 @@ function getLocalIp() {
     return 'localhost';
 }
 
+const PORT = 3000; // Убедитесь, что ваш сервер слушает этот порт
+
 // Запуск сервера
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    const localIp = getLocalIp();
-    console.log(`Сервер запущен на порту ${PORT}`);
-    console.log(`Локальная ссылка для устройств в сети Wi-Fi: http://${localIp}:${PORT}`);
+server.listen(PORT, async () => {
+    console.log(`Сервер запущен на http://localhost:${PORT}`);
+
+    try {
+        const url = await ngrok.connect(PORT);
+        console.log(`Публичный URL: ${url}`);
+    } catch (err) {
+        console.error('Ошибка при запуске ngrok:', err);
+    }
 });
